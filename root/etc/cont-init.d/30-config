@@ -1,0 +1,25 @@
+#!/usr/bin/with-contenv bash
+
+if [ ! -f /config/config.bot.json ]; then
+  cp /defaults/config.bot.json \
+     /config/config.bot.json
+fi
+
+if [ ! -f /config/config.web.json ]; then
+  cp /defaults/config.bot.json \
+     /config/config.bot.json
+fi
+
+if [ ! -f /config/schedules.json ]; then
+  cp /defaults/schedules.json \
+     /config/schedules.json
+fi
+
+chown -R \
+  abc:abc \
+    /app/monitorss \
+    /config
+
+ln -sf /config/config.bot.json /app/monitorss/settings/config.bot.json
+ln -sf /config/config.web.json /app/monitorss/settings/config.web.json
+ln -sf /config/schedules.json /app/monitorss/settings/schedules.json
