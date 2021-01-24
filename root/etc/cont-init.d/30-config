@@ -6,8 +6,8 @@ if [ ! -f /config/config.bot.json ]; then
 fi
 
 if [ ! -f /config/config.web.json ]; then
-  cp /defaults/config.bot.json \
-     /config/config.bot.json
+  cp /defaults/config.web.json \
+     /config/config.web.json
 fi
 
 if [ ! -f /config/schedules.json ]; then
