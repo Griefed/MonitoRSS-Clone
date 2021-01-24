@@ -64,7 +64,7 @@ services:
       - DRSS_BOT_TOKEN=
       - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
     volumes:
-      - ./path/to/config:/config
+      - ./path/to/config/bot:/config
   mrss-web:
     container_name: mrss-web-container
     image: griefed/monitorss-clone
@@ -86,7 +86,7 @@ services:
       - DRSSWEB_BOT_CLIENTID=
       - DRSSWEB_BOT_CLIENTSECRET=
     volumes:
-      - ./path/to/config:/config
+      - ./path/to/config/web:/config
 
 volumes:
   db-data:
@@ -115,8 +115,8 @@ DRSSWEB_BOT_TOKEN= | Your Discord Bot Token
 DRSSWEB_DATABASE_REDIS= | Address of your Redis Instance. Keep default unless you know what you are doing.
 DRSSWEB_DATABASE_URI= | Address of your MongoDB. Keep default unless you know what you are doing.
 DRSSWEB_BOT_REDIRECTURI= | 
-DRSSWEB_BOT_CLIENTID= | 
-DRSSWEB_BOT_CLIENTSECRET= | 
+DRSSWEB_BOT_CLIENTID= | See https://docs.monitorss.xyz/configuration/web-interface
+DRSSWEB_BOT_CLIENTSECRET= | See https://docs.monitorss.xyz/configuration/web-interface
 
 ## User / Group Identifiers
 
