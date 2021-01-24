@@ -4,24 +4,16 @@ services:
     container_name: mrss-redis-container
     restart: on-failure:5
     image: redis:alpine
-    # Comment below to show redis logs
-    # logging:
-    #   driver: none
   mrss-mongo:
     container_name: mrss-mongodb-container
     restart: on-failure:5
     command: mongod --port 27017
-    # Comment below to show mongo logs
-    # logging:
-    #   driver: none
     image: mongo:latest
     volumes:
       - 'db-data:/data/db'
   mrss-bot:
     container_name: mrss-bot-container
     restart: on-failure:3
-    # The image can also be used
-    # image: synzen/monitorss
     build: .
     depends_on:
       - mrss-mongo
@@ -31,8 +23,6 @@ services:
       - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
   mrss-web:
     container_name: mrss-web-container
-    # The image can also be used
-    # image: synzen/monitorss
     build: .
     restart: on-failure:3
     depends_on:
