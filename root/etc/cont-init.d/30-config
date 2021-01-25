@@ -17,15 +17,6 @@ if [ ! -f /config/schedules.json ]; then
      /config/schedules.json
 fi
 
-if [ "$DRSS_START" = "web" ]; then
-sed -i \
-  "s/DRSSWEB_BOT_REDIRECTURI/${DRSSWEB_BOT_REDIRECTURI}/g" \
-  /config/config.web.json
-else
-  sed -i \
-  "s/DRSSWEB_BOT_REDIRECTURI/${DEFAULT_REDIRECT_URI}/g" \
-  /config/config.web.json
-fi
 chown -R \
   abc:abc \
     /app/monitorss \
