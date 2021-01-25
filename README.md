@@ -40,18 +40,18 @@ Tags | Description
 version: "3.5"
 services:
   mrss-redis:
-    container_name: mrss-redis-container
+    container_name: mrss-redis
     restart: unless-stopped
     image: redis:alpine
   mrss-mongo:
-    container_name: mrss-mongodb-container
+    container_name: mrss-mongodb
     restart: unless-stopped
     command: mongod --port 27017
     image: mongo:latest
     volumes:
-      - 'db-data:/data/db'
+      - ./path/to/config/db:/data/db
   mrss-bot:
-    container_name: mrss-bot-container
+    container_name: mrss-bot
     restart: unless-stopped
     image: griefed/monitorss-clone
     depends_on:
@@ -66,7 +66,7 @@ services:
     volumes:
       - ./path/to/config/bot:/config
   mrss-web:
-    container_name: mrss-web-container
+    container_name: mrss-web
     image: griefed/monitorss-clone
     restart: unless-stopped
     depends_on:
@@ -87,9 +87,6 @@ services:
       - DRSSWEB_BOT_CLIENTSECRET=
     volumes:
       - ./path/to/config/web:/config
-
-volumes:
-  db-data:
 ```
 
 ## Raspberry Pi
@@ -108,15 +105,15 @@ TZ | Timezone
 PUID | for UserID
 PGID | for GroupID
 ports | The port where the service will be available at.
-DRSS_START=bot | One container must use `bot` and one container must use `web`
+DRSS_START=bot | Whether the container should start as bot, web, or bot-web. One container must use `bot` and one container must use `web`
 DRSS_BOT_TOKEN= | Your Discord Bot Token
 DRSS_DATABASE_URI= | Address of your MongoDB. Keep default unless you know what you are doing.
 DRSSWEB_BOT_TOKEN= | Your Discord Bot Token
 DRSSWEB_DATABASE_REDIS= | Address of your Redis Instance. Keep default unless you know what you are doing.
 DRSSWEB_DATABASE_URI= | Address of your MongoDB. Keep default unless you know what you are doing.
-DRSSWEB_BOT_REDIRECTURI= | 
-DRSSWEB_BOT_CLIENTID= | See https://docs.monitorss.xyz/configuration/web-interface
-DRSSWEB_BOT_CLIENTSECRET= | See https://docs.monitorss.xyz/configuration/web-interface
+DRSSWEB_BOT_REDIRECTURI= | Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.
+DRSSWEB_BOT_CLIENTID= | Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
+DRSSWEB_BOT_CLIENTSECRET= | Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
 
 ## User / Group Identifiers
 
@@ -129,6 +126,55 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
 ```
   $ id username
     uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)
+```
+
+# Standalone
+
+## docker-compose
+
+```
+version: "2"
+services:
+  monitorss-clone:
+    image: griefed/monitorss-clone:latest
+    container_name: monitorss-clone
+    restart: unless-stopped
+    environment:
+      - PUID=1000   # User ID
+      - PGID=1000   # Group ID
+      - DRSS_START=web # Whether the container should start as bot, web, or bot-web
+      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss # Address of your MongoDB. Keep default unless you know what you are doing.
+      - DRSS_BOT_TOKEN=123456 # Discord Bot Token
+      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379 # Address of your Redis Instance. Keep default unless you know what you are doing.
+      - DRSSWEB_BOT_TOKEN=123456 # Discord Bot Token
+      - DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize # Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.
+      - DRSSWEB_BOT_CLIENTSECRET=123456 # Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
+      - DRSSWEB_BOT_CLIENTID=123456 # Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
+    volumes:
+      - /host/path/to/config:/config # Where config files will be stored
+    ports:
+      - 8081:8081/tcp # (When using web) Port at which the web interface will be available at
+```
+
+## cli
+
+```
+docker create \
+  --name=monitorss-clone \
+  -e PUID=1000   `# User ID` \
+  -e PGID=1000   `# Group ID` \
+  -e DRSS_START=web `# Whether the container should start as bot, web, or bot-web` \
+  -e DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss `# Address of your MongoDB. Keep default unless you know what you are doing.` \
+  -e DRSS_BOT_TOKEN=123456 `# Discord Bot Token` \
+  -e DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379 `# Address of your Redis Instance. Keep default unless you know what you are doing.` \
+  -e DRSSWEB_BOT_TOKEN=123456 `# Discord Bot Token` \
+  -e DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize `# Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.` \
+  -e DRSSWEB_BOT_CLIENTSECRET=123456 `# Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface` \
+  -e DRSSWEB_BOT_CLIENTID=123456 `# Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface` \
+  -v /host/path/to/config:/config `# Where config files will be stored` \
+  -p 8081:8081/tcp `# (When using web) Port at which the web interface will be available at` \
+  --restart unless-stopped \
+  griefed/monitorss-clone:latest
 ```
 
 # Building the image yourself
