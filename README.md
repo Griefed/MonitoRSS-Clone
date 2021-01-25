@@ -19,7 +19,7 @@
 
 A control panel for the news-delivering MonitoRSS (formerly known as Discord.RSS) bot.
 
-[![MonitoRSS-Web](https://i.griefed.de/images/2021/01/24/monitorss-clone_screenshot.png)](https://github.com/synzen/MonitoRSS-Web)
+[![MonitoRSS-Web](https://i.griefed.de/images/2021/01/24/monitorss-clone_screenshot.png)](https://github.com/synzen/MonitoRSS-Clone
 
 ---
 
