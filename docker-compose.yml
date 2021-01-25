@@ -1,36 +1,44 @@
 version: "3.5"
 services:
   mrss-redis:
-    container_name: mrss-redis-container
-    restart: on-failure:5
+    container_name: mrss-redis
+    restart: unless-stopped
     image: redis:alpine
   mrss-mongo:
-    container_name: mrss-mongodb-container
-    restart: on-failure:5
+    container_name: mrss-mongodb
+    restart: unless-stopped
     command: mongod --port 27017
     image: mongo:latest
     volumes:
-      - 'db-data:/data/db'
+      - ./path/to/config/db:/data/db
   mrss-bot:
-    container_name: mrss-bot-container
-    restart: on-failure:3
-    build: .
+    container_name: mrss-bot
+    restart: unless-stopped
+    image: griefed/monitorss-clone
     depends_on:
       - mrss-mongo
     environment:
+      - TZ=Europe/Berlin
+      - PUID=1000  # User ID
+      - PGID=1000  # Group ID
       - DRSS_START=bot
       - DRSS_BOT_TOKEN=
       - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
+    volumes:
+      - ./path/to/config/bot:/config
   mrss-web:
-    container_name: mrss-web-container
-    build: .
-    restart: on-failure:3
+    container_name: mrss-web
+    image: griefed/monitorss-clone
+    restart: unless-stopped
     depends_on:
       - mrss-redis
       - mrss-mongo
     ports:
       - "8081:8081"
     environment:
+      - TZ=Europe/Berlin
+      - PUID=1000  # User ID
+      - PGID=1000  # Group ID
       - DRSS_START=web
       - DRSSWEB_BOT_TOKEN=
       - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379
@@ -38,6 +46,5 @@ services:
       - DRSSWEB_BOT_REDIRECTURI=
       - DRSSWEB_BOT_CLIENTID=
       - DRSSWEB_BOT_CLIENTSECRET=
-
-volumes:
-  db-data:
+    volumes:
+      - ./path/to/config/web:/config
