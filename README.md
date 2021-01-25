@@ -63,6 +63,8 @@ services:
       - DRSS_START=bot
       - DRSS_BOT_TOKEN=
       - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
+      - DRSS_BOT_OWNERIDS=
+      - DRSS_BOT_PREFIX=~
     volumes:
       - ./path/to/config/bot:/config
   mrss-web:
@@ -114,6 +116,8 @@ DRSSWEB_DATABASE_URI= | Address of your MongoDB. Keep default unless you know wh
 DRSSWEB_BOT_REDIRECTURI= | Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.
 DRSSWEB_BOT_CLIENTID= | Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
 DRSSWEB_BOT_CLIENTSECRET= | Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
+DRSS_BOT_OWNERIDS= | ID of bot owner
+DRSS_BOT_PREFIX=~ | Prefix for commands
 
 ## User / Group Identifiers
 
@@ -150,6 +154,8 @@ services:
       - DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize # Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.
       - DRSSWEB_BOT_CLIENTSECRET=123456 # Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
       - DRSSWEB_BOT_CLIENTID=123456 # Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
+      - DRSS_BOT_OWNERIDS=123456 # ID of bot owner
+      - DRSS_BOT_PREFIX=~ # Prefix for commands
     volumes:
       - /host/path/to/config:/config # Where config files will be stored
     ports:
@@ -171,6 +177,8 @@ docker create \
   -e DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize `# Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.` \
   -e DRSSWEB_BOT_CLIENTSECRET=123456 `# Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface` \
   -e DRSSWEB_BOT_CLIENTID=123456 `# Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface` \
+  -e DRSS_BOT_OWNERIDS=123456 '# ID of bot owner \
+  -e DRSS_BOT_PREFIX=~ '# Prefix for commands' \
   -v /host/path/to/config:/config `# Where config files will be stored` \
   -p 8081:8081/tcp `# (When using web) Port at which the web interface will be available at` \
   --restart unless-stopped \
