@@ -2,8 +2,8 @@ name: ci-publish-latest
 
 on:
   push:
-     branches:
-       - master
+    branches:
+      - master
 
 jobs:
   multi-registries:
