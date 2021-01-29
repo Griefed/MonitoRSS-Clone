@@ -1,12 +1,10 @@
 #!/usr/bin/with-contenv bash
 
-DEFAULT_REDIRECT_URI='http://localhost:8081/authorize'
-
 if [ ! -f /config/config.bot.json ]; then
   cp /defaults/config.bot.json \
      /config/config.bot.json
   sed -i \
-  "s/DRSS_DATABASE_URI/$DRSS_DATABASE_URI/g" \
+  "s/DRSSDATABASEURI/$DRSS_DATABASE_URI/g" \
   /config/config.bot.json
   sed -i \
   "s/TZ/$TZ/g" \
@@ -17,25 +15,25 @@ if [ ! -f /config/config.web.json ]; then
   cp /defaults/config.web.json \
      /config/config.web.json
   sed -i \
-  "s/DRSSWEB_BOT_REDIRECTURI/$DRSSWEB_BOT_REDIRECTURI/g" \
+  "s/DRSSWEBBOTREDIRECTURI/$DRSSWEB_BOT_REDIRECTURI/g" \
   /config/config.web.json
   sed -i \
-  "s/DRSSWEB_DATABASE_URI/$DRSSWEB_DATABASE_URI/g" \
+  "s/DRSSWEBDATABASEURI/$DRSSWEB_DATABASE_URI/g" \
   /config/config.web.json
   sed -i \
-  "s/DRSSWEB_DATABASE_REDIS/$DRSSWEB_DATABASE_REDIS/g" \
+  "s/DRSSWEBDATABASEREDIS/$DRSSWEB_DATABASE_REDIS/g" \
   /config/config.web.json
   sed -i \
-  "s/DRSSWEB_SESSION_SECRET/$DRSSWEB_SESSION_SECRET/g" \
+  "s/DRSSWEBSESSIONSECRET/$DRSSWEB_SESSION_SECRET/g" \
   /config/config.web.json
   sed -i \
-  "s/DRSS_BOT_TOKEN/$DRSS_BOT_TOKEN/g" \
+  "s/DRSSBOTTOKEN/$DRSS_BOT_TOKEN/g" \
   /config/config.web.json
   sed -i \
-  "s/DRSSWEB_BOT_CLIENTID/$DRSSWEB_BOT_CLIENTID/g" \
+  "s/DRSSWEBBOTCLIENTID/$DRSSWEB_BOT_CLIENTID/g" \
   /config/config.web.json
   sed -i \
-  "s/DRSSWEB_BOT_CLIENTSECRET/$DRSSWEB_BOT_CLIENTSECRET/g" \
+  "s/DRSSWEBBOTCLIENTSECRET/$DRSSWEB_BOT_CLIENTSECRET/g" \
   /config/config.web.json
 fi
 

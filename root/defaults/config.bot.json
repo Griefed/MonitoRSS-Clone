@@ -27,7 +27,7 @@
     "feedRequestTimeoutMs": 15000
   },
   "database": {
-    "uri": "DRSS_DATABASE_URI",
+    "uri": "DRSSDATABASEURI",
     "connection": {},
     "articlesExpire": 14,
     "deliveryRecordsExpire": 2

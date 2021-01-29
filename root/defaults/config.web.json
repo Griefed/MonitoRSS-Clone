@@ -4,19 +4,19 @@
     "destination": ""
   },
   "bot": {
-    "token": "DRSS_BOT_TOKEN",
-    "redirectURI": "DRSSWEB_BOT_REDIRECTURI",
-    "clientID": "DRSSWEB_BOT_CLIENTID",
-    "clientSecret": "DRSSWEB_BOT_CLIENTSECRET"
+    "token": "DRSSBOTTOKEN",
+    "redirectURI": "DRSSWEBBOTREDIRECTURI",
+    "clientID": "DRSSWEBBOTCLIENTID",
+    "clientSecret": "DRSSWEBBOTCLIENTSECRET"
   },
   "database": {
-    "uri": "DRSSWEB_DATABASE_URI",
+    "uri": "DRSSWEBDATABASEURI",
     "connection": {},
-    "redis": "DRSSWEB_DATABASE_REDIS"
+    "redis": "DRSSWEBDATABASEREDIS"
   },
   "http": {
     "trustProxy": true,
-    "sessionSecret": "DRSSWEB_SESSION_SECRET",
+    "sessionSecret": "DRSSWEBSESSIONSECRET",
     "port": 8081
   },
   "https": {
