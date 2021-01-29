@@ -27,7 +27,7 @@
     "feedRequestTimeoutMs": 15000
   },
   "database": {
-    "uri": "mongodb://localhost:27017/rss",
+    "uri": "DRSS_DATABASE_URI",
     "connection": {},
     "articlesExpire": 14,
     "deliveryRecordsExpire": 2
@@ -37,7 +37,7 @@
     "articleDequeueRate": 1,
     "articleRateLimit": 0,
     "articleDailyChannelLimit": 0,
-    "timezone": "America/New_York",
+    "timezone": "TZ",
     "dateFormat": "ddd, D MMMM YYYY, h:mm A z",
     "dateLanguage": "en",
     "dateLanguageList": ["en"],
