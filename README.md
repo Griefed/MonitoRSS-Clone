@@ -66,9 +66,9 @@ services:
       - PGID=1000  # Group ID
       - DRSS_START=bot
       - DRSS_BOT_TOKEN=
-      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
       - DRSS_BOT_OWNERIDS=
       - DRSS_BOT_PREFIX=~
+      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
   mrss-web:
     container_name: mrss-web
     image: griefed/monitorss-clone
@@ -89,6 +89,8 @@ services:
       - DRSSWEB_BOT_REDIRECTURI=
       - DRSSWEB_BOT_CLIENTID=
       - DRSSWEB_BOT_CLIENTSECRET=
+      - DRSSWEB_ADMINIDS=
+      - DRSSWEB_SESSION_SECRET=
 ```
 
 # Configuration
@@ -102,17 +104,19 @@ TZ | Timezone
 PUID | for UserID
 PGID | for GroupID
 ports | The port where the service will be available at.
-DRSS_START=bot | Whether the container should start as bot, web, or bot-web. One container must use `bot` and one container must use `web`
-DRSS_BOT_TOKEN= | Your Discord Bot Token
-DRSS_DATABASE_URI= | Address of your MongoDB. Keep default unless you know what you are doing.
-DRSSWEB_BOT_TOKEN= | Your Discord Bot Token
-DRSSWEB_DATABASE_REDIS= | Address of your Redis Instance. Keep default unless you know what you are doing.
-DRSSWEB_DATABASE_URI= | Address of your MongoDB. Keep default unless you know what you are doing.
-DRSSWEB_BOT_REDIRECTURI= | Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.
-DRSSWEB_BOT_CLIENTID= | Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
-DRSSWEB_BOT_CLIENTSECRET= | Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
-DRSS_BOT_OWNERIDS= | ID of bot owner
-DRSS_BOT_PREFIX=~ | Prefix for commands
+DRSS_START | Determine what parts of MonitoRSS to start. Input bot to only start the bot, web to start only the web, or bot-web to start both.
+DRSS_BOT_TOKEN | Discord Bot token. Get it here: https://discordapp.com/developers/applications/.
+DRSS_DATABASE_URI | MongoDB database URI. Cannot be a folder URI (data would not persist across reboots).
+DRSSWEB_DATABASE_REDIS | Redis database URL.
+DRSS_BOT_PREFIX | Prefix for Discord commands.
+DRSS_BOT_OWNERIDS | Owner ID(s), separate multiple with a comma.
+DRSSWEB_DATABASE_URI | REQUIRED IF DRSS_START IS web OR bot-web. MongoDB database URI. Must be the same as DRSS_DATABASE_URI.
+DRSSWEB_ADMINIDS | REQUIRED IF DRSS_START IS web OR bot-web. Web admin ID(s), separate multiple with commas.
+DRSSWEB_BOT_TOKEN | REQUIRED IF DRSS_START IS web OR bot-web. Use the same token as DRSS_BOT_TOKEN.
+DRSSWEB_BOT_REDIRECTURI | REQUIRED IF DRSS_START IS web OR bot-web. Insert the domain name appending /authorize. Example on heroku: https://APPNAME.herokuapp.com/authorize. Make sure the exact url is also set set under the application OAuth2 tab under redirects.
+DRSSWEB_BOT_CLIENTID | REQUIRED IF DRSS_START IS web OR bot-web. App ID that can be found on the general information page at https://discordapp.com/developers/applications/. This should only contain numbers.
+DRSSWEB_BOT_CLIENTSECRET | REQUIRED IF DRSS_START IS web OR bot-web. Found on your app page at Discord Developers at https://discordapp.com/developers/applications/
+DRSSWEB_SESSION_SECRET | Random string e.g. `z8gu5t48z9mvgtg3zvm9o8`
 
 ## User / Group Identifiers
 
@@ -126,192 +130,3 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
   $ id username
     uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)
 ```
-
-# Standalone
-
-## docker-compose
-
-```
-version: "2"
-services:
-  monitorss-clone:
-    image: griefed/monitorss-clone:latest
-    container_name: monitorss-clone
-    restart: unless-stopped
-    environment:
-      - PUID=1000   # User ID
-      - PGID=1000   # Group ID
-      - DRSS_START=web # Whether the container should start as bot, web, or bot-web
-      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss # Address of your MongoDB. Keep default unless you know what you are doing.
-      - DRSS_BOT_TOKEN=123456 # Discord Bot Token
-      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379 # Address of your Redis Instance. Keep default unless you know what you are doing.
-      - DRSSWEB_BOT_TOKEN=123456 # Discord Bot Token
-      - DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize # Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.
-      - DRSSWEB_BOT_CLIENTSECRET=123456 # Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
-      - DRSSWEB_BOT_CLIENTID=123456 # Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface
-      - DRSS_BOT_OWNERIDS=123456 # ID of bot owner
-      - DRSS_BOT_PREFIX=~ # Prefix for commands
-    volumes:
-      - /host/path/to/config:/config # Where config files will be stored
-    ports:
-      - 8081:8081/tcp # (When using web) Port at which the web interface will be available at
-```
-
-## cli
-
-```
-docker create \
-  --name=monitorss-clone \
-  -e PUID=1000   `# User ID` \
-  -e PGID=1000   `# Group ID` \
-  -e DRSS_START=web `# Whether the container should start as bot, web, or bot-web` \
-  -e DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss `# Address of your MongoDB. Keep default unless you know what you are doing.` \
-  -e DRSS_BOT_TOKEN=123456 `# Discord Bot Token` \
-  -e DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379 `# Address of your Redis Instance. Keep default unless you know what you are doing.` \
-  -e DRSSWEB_BOT_TOKEN=123456 `# Discord Bot Token` \
-  -e DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize `# Redirect URL for the webinterface. See https://docs.monitorss.xyz/configuration/web-interface.` \
-  -e DRSSWEB_BOT_CLIENTSECRET=123456 `# Client Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface` \
-  -e DRSSWEB_BOT_CLIENTID=123456 `# Client ID Secret of your Discord App. See https://docs.monitorss.xyz/configuration/web-interface` \
-  -e DRSS_BOT_OWNERIDS=123456 '# ID of bot owner \
-  -e DRSS_BOT_PREFIX=~ '# Prefix for commands' \
-  -v /host/path/to/config:/config `# Where config files will be stored` \
-  -p 8081:8081/tcp `# (When using web) Port at which the web interface will be available at` \
-  --restart unless-stopped \
-  griefed/monitorss-clone:latest
-```
-
-# Building the image yourself
-
-Use the [Dockerfile](https://github.com/Griefed/MonitoRSS-Clone/Dockerfile) to build the image yourself, in case you want to make any changes to it
-
-docker-compose.yml:
-
-```docker-compose.yml
-version: "3.5"
-services:
-  mrss-redis:
-    container_name: mrss-redis-container
-    restart: unless-stopped
-    image: redis:alpine
-  mrss-mongo:
-    container_name: mrss-mongodb-container
-    restart: unless-stopped
-    command: mongod --port 27017
-    image: mongo:latest
-    volumes:
-      - 'db-data:/data/db'
-  mrss-bot:
-    container_name: mrss-bot-container
-    restart: unless-stopped
-    build: ./MonitoRSS-Clone/.
-    depends_on:
-      - mrss-mongo
-    environment:
-      - TZ=Europe/Berlin
-      - PUID=1000  # User ID
-      - PGID=1000  # Group ID
-      - DRSS_START=bot
-      - DRSS_BOT_TOKEN=
-      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
-    volumes:
-      - ./path/to/config:/config
-  mrss-web:
-    container_name: mrss-web-container
-    build: ./MonitoRSS-Clone/.
-    restart: unless-stopped
-    depends_on:
-      - mrss-redis
-      - mrss-mongo
-    ports:
-      - "8081:8081"
-    environment:
-      - TZ=Europe/Berlin
-      - PUID=1000  # User ID
-      - PGID=1000  # Group ID
-      - DRSS_START=web
-      - DRSSWEB_BOT_TOKEN=
-      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379
-      - DRSSWEB_DATABASE_URI=mongodb://mrss-mongo:27017/rss
-      - DRSSWEB_BOT_REDIRECTURI=
-      - DRSSWEB_BOT_CLIENTID=
-      - DRSSWEB_BOT_CLIENTSECRET=
-    volumes:
-      - ./path/to/config:/config
-
-volumes:
-  db-data:
-```
-
-1. Clone the repository: `git clone https://github.com/Griefed/MonitoRSS-Clone.git ./MonitoRSS-Clone`
-1. Prepare docker-compose.yml file as seen above
-1. `docker-compose up -d --build monitorss-clone`
-1. Visit IP.ADDRESS.OF.HOST:8080
-1. ???
-1. Profit!
-
-# Information from the original repository by synzen
-
-## MonitoRSS Clone (Formerly Discord.RSS)
-
-***
-
-Driven by the lack of comprehensive RSS bots available, I have decided to try my hand at creating one of my own. Designed with as much customization as possible for both users and bot hosters, while also (or should be) easy to understand.
-
-All documentation can be found at https://docs.monitorss.xyz/.
-
-### Publicly Hosted Instance
-
-Don't want to bother hosting your own instance? Use the publicly hosted one!
-
-https://discordapp.com/oauth2/authorize?client_id=268478587651358721&scope=bot&permissions=19456
-
-
-### Web Interface
-
-MonitoRSS also comes with a web interface! To run the web interface, see the documentation.
-
-![UI Screenshot](https://i.imgur.com/CD8mbRh.png)
-
-### Deploy to Heroku
-
-You can deploy the bot in a simple way to Heroku using the button below. [Click here for detailed instructions](https://github.com/synzen/MonitoRSS/issues/45) - **you must have MongoDB hosted with its URI ready to also insert into `DRSS_DATABASE_URI` environment variable**.
-
-<!-- [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy) -->
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?button-url=https://github.com/synzen/MonitoRSS-Clone&template=https://github.com/synzen/MonitoRSS-Clone/tree/master)
-
-*If you want to deploy manually without the button, you can [follow this guide instead](https://github.com/synzen/MonitoRSS/issues/95).*
-
-### Hosting on Glitch
-
-MonitoRSS requires node.js v12.16. As of 23 May 2020, Glitch does not install v12.16 automatically, and must be manually installed. For MonitoRSS to work on Glitch, follow these steps.
-
-#### Setup
-
-1. Click the remix button and wait for the setup to complete. Be sure to make your project private to protect your configs.
-
-[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/synzen/MonitoRSS-Clone)
-
-2. Open terminal and run the following command. Adding the git remote will let you pull updates from the clone repo.
-```
-git remote add origin https://github.com/synzen/MonitoRSS-Clone.git && npm install --no-save node@12.16.3
-```
-
-3. Set up your [configs](https://docs.monitorss.xyz/configuration/bot-configuration). You can use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) for the MongoDB database and [Redis Labs](https://redislabs.com/) for the Redis database.
-4. Use a tool like [Uptime Robot](https://uptimerobot.com/) to prevent the bot from going offline.
-
-If you want the web interface, you will need to follow the [web configuration](https://docs.monitorss.xyz/configuration/web-interface) and add the following in a file named .env:
-
-![image](https://user-images.githubusercontent.com/44692189/82736173-5b68f500-9d49-11ea-9e42-9b23af184438.png)
-
-The web port for Glitch is 3000.
-
-#### Updating
-
-See https://docs.monitorss.xyz/setting-up/staying-updated. Since using `npm install` will remove the required node v12.16 automatically, you must install it again after updating:
-
-```
-git reset --hard origin/master && npm install && npm install --no-save node@12.16.3
-```
-
-
