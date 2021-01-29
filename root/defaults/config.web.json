@@ -4,19 +4,19 @@
     "destination": ""
   },
   "bot": {
-    "token": "",
-    "redirectURI": "http://localhost:8081/authorize",
-    "clientID": "",
-    "clientSecret": ""
+    "token": "DRSS_BOT_TOKEN",
+    "redirectURI": "DRSSWEB_BOT_REDIRECTURI",
+    "clientID": "DRSSWEB_BOT_CLIENTID",
+    "clientSecret": "DRSSWEB_BOT_CLIENTSECRET"
   },
   "database": {
-    "uri": "mongodb://localhost:27017/rss",
+    "uri": "DRSSWEB_DATABASE_URI",
     "connection": {},
-    "redis": "redis://localhost"
+    "redis": "DRSSWEB_DATABASE_REDIS"
   },
   "http": {
-    "trustProxy": false,
-    "sessionSecret": "keyboard cat",
+    "trustProxy": true,
+    "sessionSecret": "DRSSWEB_SESSION_SECRET",
     "port": 8081
   },
   "https": {
