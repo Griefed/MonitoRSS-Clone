@@ -1,6 +1,6 @@
 {
   "log": {
-    "level": "info",
+    "level": "debug",
     "destination": "",
     "linkErrs": true,
     "unfiltered": true,
@@ -8,7 +8,7 @@
     "failedFeeds": true
   },
   "bot": {
-    "token": "",
+    "token": "DRSSBOTTOKEN",
     "locale": "en-US",
     "enableCommands": true,
     "prefix": "rss.",
