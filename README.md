@@ -32,7 +32,11 @@ Using this image allows us to use the same user/group ids in the container as on
 
 Tags | Description
 -----|------------
-`latest` | Using the `latest` tag will pull the latest image for amd64/x86_64 architecture.
+`latest` | Using the `latest` tag will pull the latest image for linux/amd64,linux/arm/v7,linux/arm64.
+`develop` | The latest image of, if existent, the in-dev version of this container. Use at your own risk!
+
+Using GitHub Workflows, images for this container are multi-arch. Simply pulling `:latest` should retrieve the correct image for your architecture.
+Images are available for linux/amd64,linux/arm/v7,linux/arm64.
 
 ## Pre-built images
 
@@ -65,8 +69,6 @@ services:
       - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
       - DRSS_BOT_OWNERIDS=
       - DRSS_BOT_PREFIX=~
-    volumes:
-      - ./path/to/config/bot:/config
   mrss-web:
     container_name: mrss-web
     image: griefed/monitorss-clone
@@ -87,14 +89,7 @@ services:
       - DRSSWEB_BOT_REDIRECTURI=
       - DRSSWEB_BOT_CLIENTID=
       - DRSSWEB_BOT_CLIENTSECRET=
-    volumes:
-      - ./path/to/config/web:/config
 ```
-
-## Raspberry Pi
-
-Due to MongoDB not having an armv7 compatible container, I won't provide an arm compatible image for MonitoRSS-Clone.
-
 
 # Configuration
 
