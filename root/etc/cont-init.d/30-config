@@ -60,6 +60,6 @@ chown -R \
     /app/monitorss \
     /config
 
-ln -sf /config/config.bot.json /app/monitorss/settings/config.bot.json
-ln -sf /config/config.web.json /app/monitorss/settings/config.web.json
-ln -sf /config/schedules.json /app/monitorss/settings/schedules.json
+#ln -sf /config/config.bot.json /app/monitorss/settings/config.bot.json
+#ln -sf /config/config.web.json /app/monitorss/settings/config.web.json
+#ln -sf /config/schedules.json /app/monitorss/settings/schedules.json

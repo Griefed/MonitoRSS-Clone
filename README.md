@@ -40,23 +40,25 @@ Images are available for linux/amd64,linux/arm/v7,linux/arm64.
 
 ## Pre-built images
 
+
+
 ```docker-compose.yml
 version: "3.5"
 services:
   mrss-redis:
     container_name: mrss-redis
-    restart: unless-stopped
+    restart: on-failure:5
     image: redis:alpine
   mrss-mongo:
     container_name: mrss-mongodb
-    restart: unless-stopped
+    restart: on-failure:5
     command: mongod --port 27017
     image: mongo:latest
     volumes:
       - ./path/to/config/db:/data/db
   mrss-bot:
     container_name: mrss-bot
-    restart: unless-stopped
+    restart: on-failure:3
     image: griefed/monitorss-clone
     depends_on:
       - mrss-mongo
@@ -72,7 +74,7 @@ services:
   mrss-web:
     container_name: mrss-web
     image: griefed/monitorss-clone
-    restart: unless-stopped
+    restart: on-failure:3
     depends_on:
       - mrss-redis
       - mrss-mongo
@@ -99,7 +101,6 @@ Configuration | Explanation
 ------------ | -------------
 [Restart policy](https://docs.docker.com/compose/compose-file/#restart) | "no", always, on-failure, unless-stopped
 config volume | Contains config files and logs.
-data volume | Contains your/the containers important data.
 TZ | Timezone
 PUID | for UserID
 PGID | for GroupID
