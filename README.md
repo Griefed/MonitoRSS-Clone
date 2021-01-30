@@ -38,9 +38,8 @@ Tags | Description
 Using GitHub Workflows, images for this container are multi-arch. Simply pulling `:latest` should retrieve the correct image for your architecture.
 Images are available for linux/amd64,linux/arm/v7,linux/arm64.
 
-## Pre-built images
 
-
+## Full stack
 
 ```docker-compose.yml
 version: "3.5"
@@ -55,44 +54,87 @@ services:
     command: mongod --port 27017
     image: mongo:latest
     volumes:
-      - ./path/to/config/db:/data/db
-  mrss-bot:
-    container_name: mrss-bot
+      - ./path/to/data/db:/data/db
+  mrss-bot-web:
+    container_name: mrss-bot-web
     restart: on-failure:3
     image: griefed/monitorss-clone
-    depends_on:
-      - mrss-mongo
-    environment:
-      - TZ=Europe/Berlin
-      - PUID=1000  # User ID
-      - PGID=1000  # Group ID
-      - DRSS_START=bot
-      - DRSS_BOT_TOKEN=
-      - DRSS_BOT_OWNERIDS=
-      - DRSS_BOT_PREFIX=~
-      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
-  mrss-web:
-    container_name: mrss-web
-    image: griefed/monitorss-clone
-    restart: on-failure:3
-    depends_on:
-      - mrss-redis
-      - mrss-mongo
     ports:
-      - "8081:8081"
+     - 8081:8081
+    depends_on:
+      - mrss-mongo
+      - mrss-redis
     environment:
       - TZ=Europe/Berlin
-      - PUID=1000  # User ID
-      - PGID=1000  # Group ID
-      - DRSS_START=web
-      - DRSSWEB_BOT_TOKEN=
-      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379
+      - PUID=1000
+      - PGID=1000
+      - DRSS_START=bot-web
+      - DRSS_BOT_TOKEN=
+      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
+      - DRSS_BOT_PREFIX=~
+      - DRSS_BOT_OWNERIDS=
       - DRSSWEB_DATABASE_URI=mongodb://mrss-mongo:27017/rss
+      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379
+      - DRSSWEB_ADMINIDS=
+      - DRSSWEB_BOT_TOKEN=
       - DRSSWEB_BOT_REDIRECTURI=
       - DRSSWEB_BOT_CLIENTID=
       - DRSSWEB_BOT_CLIENTSECRET=
-      - DRSSWEB_ADMINIDS=
-      - DRSSWEB_SESSION_SECRET=
+      - DRSSWEB_SESSION_SECRET=z3tv8mu93vtz8m9oavt3a4
+```
+
+# Standalone
+
+## pre-built images
+
+```yml
+version: "2"
+services:
+  monitorss-clone:
+    image: griefed/monitorss-clone:latest
+    container_name: monitorss-clone
+    restart: unless-stopped
+    environment:
+      - PUID=1000   # User ID
+      - PGID=1000   # Group ID
+      - DRSS_START=bot-web # Determine what parts of MonitoRSS to start. Input bot to only start the bot, web to start only the web, or bot-web to start both.
+      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss # MongoDB database URI. Cannot be a folder URI (data would not persist across reboots).
+      - DRSS_BOT_TOKEN=123456 # Discord Bot token. Get it here: https://discordapp.com/developers/applications/.
+      - DRSS_BOT_PREFIX=~ # Prefix for commands
+      - DRSS_BOT_OWNERIDS=123456 # Owner ID(s), separate multiple with a comma.
+      - DRSSWEB_DATABASE_URI=mongodb://mrss-mongo:27017/rss # REQUIRED IF DRSS_START IS web OR bot-web. MongoDB database URI. Must be the same as DRSS_DATABASE_URI.
+      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379 # Redis database URI.
+      - DRSSWEB_BOT_TOKEN=123456 # REQUIRED IF DRSS_START IS web OR bot-web. Use the same token as DRSS_BOT_TOKEN.
+      - DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize # REQUIRED IF DRSS_START IS web OR bot-web. Insert the domain name appending /authorize. Example on heroku: https://APPNAME.herokuapp.com/authorize. Make sure the exact url is also set set under the application OAuth2 tab under redirects.
+      - DRSSWEB_BOT_CLIENTSECRET=123456 # REQUIRED IF DRSS_START IS web OR bot-web. Found on your app page at Discord Developers at https://discordapp.com/developers/applications/
+      - DRSSWEB_BOT_CLIENTID=123456 # REQUIRED IF DRSS_START IS web OR bot-web. App ID that can be found on the general information page at https://discordapp.com/developers/applications/. This should only contain numbers.
+      - DRSSWEB_ADMINIDS=123456 # REQUIRED IF DRSS_START IS web OR bot-web. Web admin ID(s), separate multiple with commas.
+    ports:
+      - 8081:8081/tcp # (When using web) Port at which the web interface will be available at
+```
+
+## cli
+
+```bash
+docker create \
+  --name=monitorss-clone \
+  -e PUID=1000   `# User ID` \
+  -e PGID=1000   `# Group ID` \
+  -e DRSS_START=bot-web `# Determine what parts of MonitoRSS to start. Input bot to only start the bot, web to start only the web, or bot-web to start both.` \
+  -e DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss `# MongoDB database URI. Cannot be a folder URI (data would not persist across reboots).` \
+  -e DRSS_BOT_TOKEN=123456 `# Discord Bot token. Get it here: https://discordapp.com/developers/applications/.` \
+  -e DRSS_BOT_PREFIX=~ `# Prefix for commands` \
+  -e DRSS_BOT_OWNERIDS=123456 `# Owner ID(s), separate multiple with a comma.` \
+  -e DRSSWEB_DATABASE_URI=mongodb://mrss-mongo:27017/rss `# REQUIRED IF DRSS_START IS web OR bot-web. MongoDB database URI. Must be the same as DRSS_DATABASE_URI.` \
+  -e DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379 `# Redis database URI.` \
+  -e DRSSWEB_BOT_TOKEN=123456 `# REQUIRED IF DRSS_START IS web OR bot-web. Use the same token as DRSS_BOT_TOKEN.` \
+  -e DRSSWEB_BOT_REDIRECTURI=http://localhost:8081/authorize `# REQUIRED IF DRSS_START IS web OR bot-web. Insert the domain name appending /authorize. Example on heroku: https://APPNAME.herokuapp.com/authorize. Make sure the exact url is also set set under the application OAuth2 tab under redirects.` \
+  -e DRSSWEB_BOT_CLIENTSECRET=123456 `# REQUIRED IF DRSS_START IS web OR bot-web. Found on your app page at Discord Developers at https://discordapp.com/developers/applications/` \
+  -e DRSSWEB_BOT_CLIENTID=123456 `# REQUIRED IF DRSS_START IS web OR bot-web. App ID that can be found on the general information page at https://discordapp.com/developers/applications/. This should only contain numbers.` \
+  -e DRSSWEB_ADMINIDS=123456 `# REQUIRED IF DRSS_START IS web OR bot-web. Web admin ID(s), separate multiple with commas.` \
+  -p 8081:8081/tcp `# (When using web) Port at which the web interface will be available at` \
+  --restart unless-stopped \
+  griefed/monitorss-clone:latest
 ```
 
 # Configuration
@@ -100,7 +142,6 @@ services:
 Configuration | Explanation
 ------------ | -------------
 [Restart policy](https://docs.docker.com/compose/compose-file/#restart) | "no", always, on-failure, unless-stopped
-config volume | Contains config files and logs.
 TZ | Timezone
 PUID | for UserID
 PGID | for GroupID
@@ -108,7 +149,7 @@ ports | The port where the service will be available at.
 DRSS_START | Determine what parts of MonitoRSS to start. Input bot to only start the bot, web to start only the web, or bot-web to start both.
 DRSS_BOT_TOKEN | Discord Bot token. Get it here: https://discordapp.com/developers/applications/.
 DRSS_DATABASE_URI | MongoDB database URI. Cannot be a folder URI (data would not persist across reboots).
-DRSSWEB_DATABASE_REDIS | Redis database URL.
+DRSSWEB_DATABASE_REDIS | Redis database URI.
 DRSS_BOT_PREFIX | Prefix for Discord commands.
 DRSS_BOT_OWNERIDS | Owner ID(s), separate multiple with a comma.
 DRSSWEB_DATABASE_URI | REQUIRED IF DRSS_START IS web OR bot-web. MongoDB database URI. Must be the same as DRSS_DATABASE_URI.
@@ -117,7 +158,7 @@ DRSSWEB_BOT_TOKEN | REQUIRED IF DRSS_START IS web OR bot-web. Use the same token
 DRSSWEB_BOT_REDIRECTURI | REQUIRED IF DRSS_START IS web OR bot-web. Insert the domain name appending /authorize. Example on heroku: https://APPNAME.herokuapp.com/authorize. Make sure the exact url is also set set under the application OAuth2 tab under redirects.
 DRSSWEB_BOT_CLIENTID | REQUIRED IF DRSS_START IS web OR bot-web. App ID that can be found on the general information page at https://discordapp.com/developers/applications/. This should only contain numbers.
 DRSSWEB_BOT_CLIENTSECRET | REQUIRED IF DRSS_START IS web OR bot-web. Found on your app page at Discord Developers at https://discordapp.com/developers/applications/
-DRSSWEB_SESSION_SECRET | Random string e.g. `z8gu5t48z9mvgtg3zvm9o8`
+DRSSWEB_SESSION_SECRET | Random string e.g. `tzt8q3z89gpc345qa98zmg3cg`
 
 ## User / Group Identifiers
 
@@ -131,3 +172,56 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
   $ id username
     uid=1000(dockeruser) gid=1000(dockergroup) groups=1000(dockergroup)
 ```
+
+# Building the image yourself
+
+Use the [Dockerfile](https://github.com/Griefed/MonitoRSS-Clone/Dockerfile) to build the image yourself, in case you want to make any changes to it
+
+docker-compose.yml:
+
+```docker-compose.yml
+version: "3.5"
+services:
+  mrss-redis:
+    container_name: mrss-redis-container
+    restart: on-failure:5
+    image: redis:alpine
+  mrss-mongo:
+    container_name: mrss-mongodb-container
+    restart: on-failure:5
+    command: mongod --port 27017
+    image: mongo:latest
+    volumes:
+      - 'db-data:/data/db'
+  mrss-bot-web:
+    container_name: mrss-bot-web
+    restart: on-failure:3
+    build: ./MonitoRSS-Clone/.
+    depends_on:
+      - mrss-mongo
+      - mrss-redis
+    environment:
+      - TZ=Europe/Berlin
+      - PUID=1000
+      - PGID=1000
+      - DRSS_START=bot-web
+      - DRSS_BOT_TOKEN=
+      - DRSS_DATABASE_URI=mongodb://mrss-mongo:27017/rss
+      - DRSS_BOT_PREFIX=~
+      - DRSS_BOT_OWNERIDS=
+      - DRSSWEB_DATABASE_URI=mongodb://mrss-mongo:27017/rss
+      - DRSSWEB_DATABASE_REDIS=redis://mrss-redis:6379
+      - DRSSWEB_ADMINIDS=
+      - DRSSWEB_BOT_TOKEN=
+      - DRSSWEB_BOT_REDIRECTURI=
+      - DRSSWEB_BOT_CLIENTID=
+      - DRSSWEB_BOT_CLIENTSECRET=
+      - DRSSWEB_SESSION_SECRET=z3tv8mu93vtz8m9oavt3a4
+```
+
+1. Clone the repository: `git clone https://github.com/Griefed/MonitoRSS-Clone.git ./MonitoRSS-Clone`
+1. Prepare docker-compose.yml file as seen above
+1. `docker-compose up -d --build mrss-bot-web`
+1. Visit IP.ADDRESS.OF.HOST:8080
+1. ???
+1. Profit!
