@@ -85,6 +85,8 @@ services:
 
 # Standalone
 
+**Please bear in mind that, in order for `DRSS_START=web` or `DRSS_START=bot-web` to work, you need Redis and MongoDB.**
+
 ## pre-built images
 
 ```yml
@@ -222,6 +224,6 @@ services:
 1. Clone the repository: `git clone https://github.com/Griefed/MonitoRSS-Clone.git ./MonitoRSS-Clone`
 1. Prepare docker-compose.yml file as seen above
 1. `docker-compose up -d --build mrss-bot-web`
-1. Visit IP.ADDRESS.OF.HOST:8080
+1. Visit IP.ADDRESS.OF.HOST:8081
 1. ???
 1. Profit!
